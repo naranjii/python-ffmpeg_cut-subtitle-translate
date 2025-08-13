@@ -1,13 +1,13 @@
 import os
 import subprocess
-from googletrans import Translator
+from deep_translator import GoogleTranslator
 from pathlib import Path
 
 # ---------------- CONFIG ---------------- #
-VIDEO_FILE = "00-00--01-05.mp4"               # Your input video
+VIDEO_FILE = "C:/path/to/video.mp4"               # Your input video
 CHUNK_DIR = "chunks"                          # Folder to store video chunks
 SUB_DIR = "subtitles"                         # Folder to store subtitles
-FINAL_SRT = "video_pt.srt"                    # Output translated subtitle
+FINAL_SRT = "video.srt"                    # Output translated subtitle
 CHUNK_SECONDS = 600                           # 10 minutes per chunk
 WHISPER_MODEL = "small"                       # CPU-friendly model
 # ---------------------------------------- #
@@ -31,7 +31,7 @@ print("Video split complete.")
 
 # --------- 2️⃣ Transcribe each chunk --------- #
 chunk_files = sorted(Path(CHUNK_DIR).glob("chunk_*.mp4"))
-translator = Translator()
+translator = GoogleTranslator(source="en", target="pt")
 all_translated_lines = []
 
 for chunk in chunk_files:
@@ -60,12 +60,16 @@ for chunk in chunk_files:
     for line in lines:
         line_strip = line.strip()
         # Skip timestamps and numbers
-        if line_strip and not "-->" in line_strip and not line_strip.isdigit():
-            translated_text = translator.translate(line_strip, src="en", dest="pt").text
+        if line_strip and "-->" not in line_strip and not line_strip.isdigit():
+            try:
+                translated_text = translator.translate(line_strip)
+            except Exception as e:
+                print(f"Translation error: {e}")
+                translated_text = line_strip
             translated_lines.append(translated_text)
         else:
             translated_lines.append(line_strip)
-    
+
     all_translated_lines.extend(translated_lines)
     all_translated_lines.append("")  # Add blank line between chunks
 
