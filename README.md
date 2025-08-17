@@ -47,7 +47,7 @@
 
 <h2>Run 💬</h2>
 <ol>
-<li>Place your video in the same folder as <code>main.py</code> or update the path in the script.</li>
+<li>Update the path to VIDEO_FILE inside <code>main.py</code></li>
 <li>Run:</li>
 </ol>
 <pre><code>python main.py
